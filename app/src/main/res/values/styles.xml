@@ -5,4 +5,8 @@
         <item name="cornerSize">50%</item>
     </style>
 
+    <style name="ToolbarColor" parent="Theme.ScreeningTestApp">
+        <item name="colorControlNormal">@color/white</item>
+    </style>
+
 </resources>

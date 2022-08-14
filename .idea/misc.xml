@@ -4,8 +4,10 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/development/MobileApps/screening/app/src/main/res/drawable-v24/circle.xml" value="0.268" />
+        <entry key="..\:/development/MobileApps/screening/app/src/main/res/layout/activity_guest.xml" value="0.1" />
         <entry key="..\:/development/MobileApps/screening/app/src/main/res/layout/activity_home.xml" value="0.18" />
         <entry key="..\:/development/MobileApps/screening/app/src/main/res/layout/activity_main.xml" value="0.3625" />
+        <entry key="..\:/development/MobileApps/screening/app/src/main/res/layout/item_guest.xml" value="0.2975630611372381" />
       </map>
     </option>
   </component>

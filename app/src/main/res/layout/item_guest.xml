@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:padding="15dp"
+    android:gravity="center">
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/img_profile"
+        android:layout_width="90dp"
+        android:layout_height="90dp"
+        android:adjustViewBounds="true"
+        android:background="@drawable/circle"
+        android:backgroundTint="#C4C4C4"
+        android:scaleType="centerCrop"
+        app:shapeAppearanceOverlay="@style/circleImage" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:textSize="16dp"
+        android:textColor="@color/black"
+        android:text="Test"/>
+
+</LinearLayout>
