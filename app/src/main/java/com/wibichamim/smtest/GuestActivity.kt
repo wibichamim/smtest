@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.wibichamim.smtest.adapter.GuestAdapter
@@ -21,7 +22,10 @@ class GuestActivity : AppCompatActivity() {
 
     lateinit var guestAdapter: GuestAdapter
     lateinit var recyclerView: RecyclerView
-    var page : Int = 1
+    private var page : Int = 1
+    private var totalPage: Int = 3
+
+    private var isLoading = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,31 +45,52 @@ class GuestActivity : AppCompatActivity() {
         fetchGuest()
 
         binding.refresh.setOnRefreshListener {
+            guestAdapter.guestList.clear()
+            page = 1
             fetchGuest()
         }
 
-        recyclerView.addOnScrollListener(PaginationScrollListener())
+        recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+
+                val layoutManager = recyclerView.layoutManager as GridLayoutManager
+
+                val visibleItemCount = layoutManager.itemCount
+                val pastVisibleItem = layoutManager.findLastVisibleItemPosition()
+                val isLastPosition = visibleItemCount.minus(1) == pastVisibleItem
+                val total  = guestAdapter.itemCount
+                Toast.makeText(this@GuestActivity,isLoading.toString(),Toast.LENGTH_LONG).show()
+                if (!isLoading && isLastPosition && page < totalPage){
+                    Toast.makeText(this@GuestActivity,"here",Toast.LENGTH_LONG).show()
+                    page++
+                    fetchGuest()
+                }
+            }
+        })
 
     }
 
     private fun fetchGuest() {
+        isLoading = true
+        Toast.makeText(this,page.toString(),Toast.LENGTH_SHORT).show()
         ApiInterface.create().getGuest(page).clone().enqueue(object : Callback<ResultGuest?> {
             override fun onResponse(call: Call<ResultGuest?>, response: Response<ResultGuest?>) {
                 binding.refresh.isRefreshing = false
+                isLoading = false
                 if (response.body() != null) {
 
                     guestAdapter.addAll(response.body()!!.data)
                     guestAdapter.notifyDataSetChanged()
-
-                    for (guest in response.body()!!.data) {
-                        Log.d("Respo", "onResponse: " + guest.firstName)
-                    }
+                } else {
+                    Log.d("Response", "onResponse: ${response.body()}")
                 }
             }
 
             override fun onFailure(call: Call<ResultGuest?>, t: Throwable) {
                 binding.refresh.isRefreshing = false
-                Log.d("Respo", "onResponse: $t")
+                isLoading = false
+                Log.d("Response", "onResponse: $t")
             }
         })
     }
