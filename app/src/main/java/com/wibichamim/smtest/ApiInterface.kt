@@ -1,15 +1,19 @@
 package com.wibichamim.smtest
 
-import com.wibichamim.smtest.model.Guest
+import com.wibichamim.smtest.data.ResultGuest
 import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
+import retrofit2.http.Query
 
 interface ApiInterface {
 
     @GET("users")
-    fun getGuest() : Call<List<Guest>>
+    fun getGuest(
+        @Query("page") page : Int,
+        @Query("per_page") per_page : Int = 10
+    ) : Call<ResultGuest>
 
     companion object {
         var BASE_URL = "https://reqres.in/api/"

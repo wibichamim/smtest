@@ -5,17 +5,23 @@ import android.util.Log
 import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.wibichamim.smtest.adapter.GuestAdapter
+import com.wibichamim.smtest.data.Guest
+import com.wibichamim.smtest.data.ResultGuest
 import com.wibichamim.smtest.databinding.ActivityGuestBinding
-import com.wibichamim.smtest.model.Guest
 import retrofit2.Call
+import retrofit2.Callback
 import retrofit2.Response
-import javax.security.auth.callback.Callback
-import kotlin.math.log
 
 class GuestActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityGuestBinding
-    private val apiInterface = ApiInterface.create().getGuest()
+
+    lateinit var guestAdapter: GuestAdapter
+    lateinit var recyclerView: RecyclerView
+    var page : Int = 1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,21 +34,38 @@ class GuestActivity : AppCompatActivity() {
         actionBar?.setDisplayHomeAsUpEnabled(true)
         actionBar?.title = "Guest"
 
+        recyclerView = binding.listGuest
+        guestAdapter = GuestAdapter(this)
+        recyclerView.adapter = guestAdapter
+
         fetchGuest()
+
+        binding.refresh.setOnRefreshListener {
+            fetchGuest()
+        }
+
+        recyclerView.addOnScrollListener(PaginationScrollListener())
 
     }
 
     private fun fetchGuest() {
-        apiInterface.clone().enqueue(object : retrofit2.Callback<List<Guest>?> {
-            override fun onResponse(call: Call<List<Guest>?>, response: Response<List<Guest>?>) {
-                Log.d("Respo", "onResponse: " + response.body())
+        ApiInterface.create().getGuest(page).clone().enqueue(object : Callback<ResultGuest?> {
+            override fun onResponse(call: Call<ResultGuest?>, response: Response<ResultGuest?>) {
+                binding.refresh.isRefreshing = false
                 if (response.body() != null) {
-                    Log.d("Respo", "onResponse: " + response.body())
+
+                    guestAdapter.addAll(response.body()!!.data)
+                    guestAdapter.notifyDataSetChanged()
+
+                    for (guest in response.body()!!.data) {
+                        Log.d("Respo", "onResponse: " + guest.firstName)
+                    }
                 }
             }
 
-            override fun onFailure(call: Call<List<Guest>?>, t: Throwable) {
-                Toast.makeText(this@GuestActivity,t.toString(),Toast.LENGTH_LONG).show()
+            override fun onFailure(call: Call<ResultGuest?>, t: Throwable) {
+                binding.refresh.isRefreshing = false
+                Log.d("Respo", "onResponse: $t")
             }
         })
     }
