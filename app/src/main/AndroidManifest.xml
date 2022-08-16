@@ -22,6 +22,10 @@
         android:theme="@style/Theme.ScreeningTestApp"
         tools:targetApi="31">
         <activity
+            android:name=".EventsActivity"
+            android:exported="false"
+            android:theme="@style/Theme.ScreeningTestApp.NoActionBar"/>
+        <activity
             android:name=".GuestActivity"
             android:exported="false"
             android:theme="@style/Theme.ScreeningTestApp.NoActionBar" />

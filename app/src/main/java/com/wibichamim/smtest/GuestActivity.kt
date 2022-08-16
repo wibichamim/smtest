@@ -1,12 +1,14 @@
 package com.wibichamim.smtest
 
+import android.annotation.SuppressLint
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.wibichamim.smtest.adapter.GuestAdapter
 import com.wibichamim.smtest.data.Guest
@@ -21,7 +23,7 @@ class GuestActivity : AppCompatActivity() {
     private lateinit var binding: ActivityGuestBinding
 
     lateinit var guestAdapter: GuestAdapter
-    lateinit var recyclerView: RecyclerView
+    private lateinit var recyclerView: RecyclerView
     private var page : Int = 1
     private var totalPage: Int = 3
 
@@ -39,7 +41,9 @@ class GuestActivity : AppCompatActivity() {
         actionBar?.title = "Guest"
 
         recyclerView = binding.listGuest
-        guestAdapter = GuestAdapter(this)
+        guestAdapter = GuestAdapter(this, GuestAdapter.OnClickListener {guest ->
+            returnData(guest)
+        })
         recyclerView.adapter = guestAdapter
 
         fetchGuest()
@@ -59,7 +63,7 @@ class GuestActivity : AppCompatActivity() {
                 val visibleItemCount = layoutManager.itemCount
                 val pastVisibleItem = layoutManager.findLastVisibleItemPosition()
                 val isLastPosition = visibleItemCount.minus(1) == pastVisibleItem
-                val total  = guestAdapter.itemCount
+
                 Toast.makeText(this@GuestActivity,isLoading.toString(),Toast.LENGTH_LONG).show()
                 if (!isLoading && isLastPosition && page < totalPage){
                     Toast.makeText(this@GuestActivity,"here",Toast.LENGTH_LONG).show()
@@ -71,10 +75,20 @@ class GuestActivity : AppCompatActivity() {
 
     }
 
+    private fun returnData(guest: Guest) {
+        var data = Intent()
+        var name = guest.firstName
+
+        data.data = Uri.parse(name)
+        setResult(RESULT_OK,data)
+        finish()
+    }
+
     private fun fetchGuest() {
         isLoading = true
         Toast.makeText(this,page.toString(),Toast.LENGTH_SHORT).show()
         ApiInterface.create().getGuest(page).clone().enqueue(object : Callback<ResultGuest?> {
+            @SuppressLint("NotifyDataSetChanged")
             override fun onResponse(call: Call<ResultGuest?>, response: Response<ResultGuest?>) {
                 binding.refresh.isRefreshing = false
                 isLoading = false

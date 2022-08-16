@@ -12,7 +12,7 @@ import com.bumptech.glide.request.RequestOptions
 import com.wibichamim.smtest.R
 import com.wibichamim.smtest.data.Guest
 
-class GuestAdapter(val context: Context) : RecyclerView.Adapter<GuestAdapter.MyViewHolder> () {
+class GuestAdapter(val context: Context, private val onClickListener: OnClickListener) : RecyclerView.Adapter<GuestAdapter.MyViewHolder> () {
 
     var guestList : MutableList<Guest> = mutableListOf()
 
@@ -26,6 +26,9 @@ class GuestAdapter(val context: Context) : RecyclerView.Adapter<GuestAdapter.MyV
         Glide.with(context).load(guestList[position].avatar)
             .apply (RequestOptions().centerCrop())
             .into(holder.profilePic)
+        holder.itemView.setOnClickListener{
+            onClickListener.onClick(guestList[position])
+        }
     }
 
     override fun getItemCount(): Int {
@@ -49,6 +52,10 @@ class GuestAdapter(val context: Context) : RecyclerView.Adapter<GuestAdapter.MyV
 
     fun getGuest(position: Int): Guest {
         return guestList[position]
+    }
+
+    class OnClickListener(val clickListener: (guest : Guest) -> Unit) {
+        fun onClick(guest: Guest) = clickListener(guest)
     }
 
 }
